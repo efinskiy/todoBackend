@@ -31,10 +31,10 @@ async def register_user(
     user_check = await session.scalar(
         select(User).where(User.username == user.username)
     )
-    # Если пользователь уже существует, возвращаем 400 ошибку
+    # Если пользователь уже существует, возвращаем 409 ошибку
     if user_check:
         raise HTTPException(
-            status_code=400, detail="Пользователь с таким именем уже существует"
+            status_code=409, detail="Пользователь с таким именем уже существует"
         )
 
     # Создаем нового пользователя
@@ -57,7 +57,7 @@ async def login_user(
     )
     # Если не существует пользователь, или пароль не подходит, возвращаем ошибку
     if not user or not verify_password(login_data.password, user.password_hashed):
-        raise HTTPException(status_code=400, detail="Неверный логин или пароль")
+        raise HTTPException(status_code=401, detail="Неверный логин или пароль")
 
     # таймштамп когда истечет access_token
     expires_timestamp = int(
